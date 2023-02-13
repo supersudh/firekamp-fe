@@ -1,0 +1,16 @@
+.authview-main {
+  width: 100%;
+
+  .search-bar-tools-section {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+
+    .account_box_ico {
+      width: 1.5em;
+      height: 1.5em;
+      cursor: pointer;
+    }
+  }
+}

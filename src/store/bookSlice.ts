@@ -14,9 +14,12 @@ const booksSlice = createSlice({
       state.isFetchingBooks = true;
     },
     setBooks(state, action: PayloadAction<any>) {
+      console.log(17, action.payload);
       state.books = action.payload;
       state.isFetchingBooks = false;
-    }
+    },
+    fetchFavoriteBooks(state) { },
+    addFavorite(state) { }
   }
 });
 

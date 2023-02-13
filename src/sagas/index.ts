@@ -1,6 +1,7 @@
 import { call, put, takeEvery, takeLatest, fork } from 'redux-saga/effects'
 import axios from 'axios';
 import { actions as userActions } from '../store/userSlice';
+import { actions as bookActions } from '../store/bookSlice';
 
 export function* mySaga() {
   console.log('I Am running saga!');
@@ -9,7 +10,9 @@ export function* mySaga() {
   yield fork(loginWatcher);
   yield fork(logoutWatcher);
   yield fork(booksFetcher);
-  yield fork(favoriteBook);
+  yield fork(fetchFavoriteBookWatcher);
+  yield fork(addFavoriteBookWatcher);
+
 
 }
 
@@ -69,25 +72,55 @@ function* loginWatcher() {
 }
 
 function* logoutWatcher() {
-  try {
-    
-  } catch (error) {
-
-  }
+  yield takeLatest(userActions.logout, function handler({ payload }) {
+    try {
+      window.localStorage.removeItem('token');
+    } catch (error) {
+      console.log(error);
+    }
+  });
 }
 
 function* booksFetcher() {
-  try {
-
-  } catch (error) {
-
-  }
+  yield takeLatest(bookActions.fetchBooks, function* handler({ payload }) {
+    try {
+      const term = payload || '';
+      const { data } = yield axios.get(`https://www.googleapis.com/books/v1/volumes?q=${term.replace(/ /g, '+')}`);
+      yield put(bookActions.setBooks(data));
+    } catch (error) {
+      console.log(error);
+    }
+  });
 }
 
-function* favoriteBook(type = '') {
-  try {
+function* fetchFavoriteBookWatcher() {
+  yield takeLatest(bookActions.fetchFavoriteBooks, function* handler({ payload }) {
+    try {
+      const token = window.localStorage.getItem('token');
+      const { data } = yield axios.get(`${URL}/users/favorite_books`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      yield put(bookActions.setBooks(data));
+    } catch (error) {
+      console.log(error);
+    }
+  });
+}
 
-  } catch (error) {
-
-  }
+function* addFavoriteBookWatcher() {
+  yield takeLatest(bookActions.addFavorite, function* handler({ payload }) {
+    try {
+      const body = payload;
+      const token = window.localStorage.getItem('token');
+      const { data } = yield axios.post(`${URL}/users/favorite_book`, body, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
 }

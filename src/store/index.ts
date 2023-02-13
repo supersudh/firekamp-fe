@@ -7,7 +7,7 @@ import { mySaga } from '../sagas';
 
 const rootReducer = combineReducers({
   users: userSliceReducer,
-  books: bookSliceReducer,
+  booksData: bookSliceReducer,
 });
 
 const sagaMiddleware = createSagaMiddleware()

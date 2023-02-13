@@ -1,15 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import './App.css';
+import './App.scss';
 import Signup from './components/Signup';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
 import {
-  actions
+  actions as userActions
 } from './store/userSlice';
+import {
+  actions as bookActions
+} from './store/bookSlice';
 import Login from './components/Login';
 import BookSearch from './containers/BookSearch';
 import FavoriteBooks from './containers/FavoriteBooks';
+import AuthView from './containers/AuthView';
 
 interface AppProps {
   currentUser: any;
@@ -19,6 +23,10 @@ interface AppProps {
   watchAuth: () => void;
   onPerformRegister: (registerObject: any) => void;
   onPerformLogin: (loginObject: any) => void;
+  fetchBooks: (term: any) => void;
+  logout: () => void;
+  fetchFavoriteBooks: () => void;
+  addFavorite: (arg: any) => void;
 }
 
 interface AppState {
@@ -32,8 +40,13 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const {
+      books,
       currentUser,
-      isFetchingCurrentUser
+      isFetchingCurrentUser,
+      isFetchingBooks,
+      fetchFavoriteBooks,
+      addFavorite,
+      logout
     } = this.props;
 
     if (!currentUser) {
@@ -46,10 +59,15 @@ class App extends React.Component<AppProps, AppState> {
       );
     } else {
       return (
-        <>
-          <BookSearch />
-          <FavoriteBooks />
-        </>
+        <AuthView
+          fetchBooks={this.props.fetchBooks}
+          isFetchingBooks={isFetchingBooks}
+          books={books}
+          currentUser={currentUser}
+          fetchFavoriteBooks={fetchFavoriteBooks}
+          addFavorite={addFavorite}
+          logout={logout}
+        />
       );
     }
 
@@ -65,7 +83,7 @@ function mapStateToProps(state: any) {
   const {
     books,
     isFetchingBooks
-  } = state.books;
+  } = state.booksData;
   return {
     currentUser,
     isFetchingCurrentUser,
@@ -74,7 +92,7 @@ function mapStateToProps(state: any) {
   };
 }
 function mapDispatchToProps(dispatch: any) {
-  return bindActionCreators(actions, dispatch);
+  return bindActionCreators({ ...userActions, ...bookActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,0 +1,18 @@
+.bd_main {
+  .bd_main__inner {}
+}
+
+@media (max-width: 600px) {
+  .bd_main__inner {
+    display: flex;
+    justify-content: center;
+
+    .bd_grid {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+
+      .main-card {}
+    }
+  }
+}
