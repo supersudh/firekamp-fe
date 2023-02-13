@@ -1,26 +1,80 @@
 import React from 'react';
-import logo from './logo.svg';
+import { connect } from 'react-redux';
 import './App.css';
+import Signup from './components/Signup';
+import { bindActionCreators } from '@reduxjs/toolkit';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import {
+  actions
+} from './store/userSlice';
+import Login from './components/Login';
+import BookSearch from './containers/BookSearch';
+import FavoriteBooks from './containers/FavoriteBooks';
+
+interface AppProps {
+  currentUser: any;
+  isFetchingCurrentUser: boolean;
+  books: any;
+  isFetchingBooks: boolean;
+  watchAuth: () => void;
+  onPerformRegister: (registerObject: any) => void;
+  onPerformLogin: (loginObject: any) => void;
 }
 
-export default App;
+interface AppState {
+}
+
+class App extends React.Component<AppProps, AppState> {
+
+  componentDidMount(): void {
+    this.props.watchAuth();
+  }
+
+  render() {
+    const {
+      currentUser,
+      isFetchingCurrentUser
+    } = this.props;
+
+    if (!currentUser) {
+      return (
+        <>
+          <Signup onPerformRegister={this.props.onPerformRegister} />
+          <p className="text-center">(OR)</p>
+          <Login onPerformLogin={this.props.onPerformLogin} />
+        </>
+      );
+    } else {
+      return (
+        <>
+          <BookSearch />
+          <FavoriteBooks />
+        </>
+      );
+    }
+
+  }
+}
+
+function mapStateToProps(state: any) {
+  const {
+    currentUser,
+    isFetchingCurrentUser
+  } = state.users;
+
+  const {
+    books,
+    isFetchingBooks
+  } = state.books;
+  return {
+    currentUser,
+    isFetchingCurrentUser,
+    books,
+    isFetchingBooks
+  };
+}
+function mapDispatchToProps(dispatch: any) {
+  return bindActionCreators(actions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
