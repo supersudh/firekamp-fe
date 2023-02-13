@@ -72,9 +72,10 @@ function* loginWatcher() {
 }
 
 function* logoutWatcher() {
-  yield takeLatest(userActions.logout, function handler({ payload }) {
+  yield takeLatest(userActions.logout, function* handler({ payload }) {
     try {
       window.localStorage.removeItem('token');
+      yield put(bookActions.setBooks([]));
     } catch (error) {
       console.log(error);
     }
